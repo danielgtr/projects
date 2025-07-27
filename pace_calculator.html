@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Pace - Running Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            color: #34495e;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d0d0d0;
+            border-radius: 10px;
+            font-size: 16px;
+            background: #ffffff;
+            color: #333;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+        }
+
+        input::placeholder {
+            color: #999;
+            opacity: 1;
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .time-inputs input {
+            width: 60px;
+            min-width: 60px;
+            text-align: center;
+            font-weight: 600;
+            background: #ffffff;
+            border: 2px solid #d0d0d0;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 12px 8px;
+        }
+
+        .time-inputs select {
+            flex: 1;
+            min-width: 90px;
+        }
+
+        .time-inputs span {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .results {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .results h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .section {
+                padding: 15px;
+            }
+        }
+
+        .treadmill-highlight {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border: 2px solid #ff6b9d;
+        }
+
+        .example {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ Calculadora de Pace</h1>
+        
+        <!-- Convertidor de Pace -->
+        <div class="section">
+            <h2>Convertidor de Pace</h2>
+            <div class="input-group">
+                <label>Introduce un pace:</label>
+                <div class="time-inputs">
+                    <input type="number" id="paceMin" placeholder="5" min="0">
+                    <span>min</span>
+                    <input type="number" id="paceSec" placeholder="30" min="0" max="59">
+                    <span>seg</span>
+                    <select id="paceUnit">
+                        <option value="km">por km</option>
+                        <option value="mile">por milla</option>
+                    </select>
+                </div>
+                <div class="example">Ejemplo: 5:30 min/km</div>
+            </div>
+            <button class="btn" onclick="convertPace()">Convertir</button>
+            <div id="paceResults" class="results hidden">
+                <h3>Conversiones:</h3>
+                <div id="paceConversions"></div>
+            </div>
+        </div>
+
+        <!-- Calculadora de Tiempo/Distancia -->
+        <div class="section">
+            <h2>Calculadora de Tiempo y Distancia</h2>
+            <div class="input-group">
+                <label>Distancia:</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="distance" placeholder="14" step="0.1">
+                    <select id="distanceUnit">
+                        <option value="km">km</option>
+                        <option value="miles">millas</option>
+                    </select>
+                </div>
+            </div>
+            <div class="input-group">
+                <label>Pace objetivo:</label>
+                <div class="time-inputs">
+                    <input type="number" id="targetMin" placeholder="4" min="0">
+                    <span>min</span>
+                    <input type="number" id="targetSec" placeholder="0" min="0" max="59">
+                    <span>seg</span>
+                    <select id="targetUnit">
+                        <option value="km">por km</option>
+                        <option value="mile">por milla</option>
+                    </select>
+                </div>
+                <div class="example">Ejemplo: 12 km a 5:40 min/km</div>
+            </div>
+            <button class="btn" onclick="calculateRun()">Calcular</button>
+            <div id="runResults" class="results hidden">
+                <h3>Resultados del entrenamiento:</h3>
+                <div id="runCalculations"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Conversiones básicas
+        const KM_TO_MILE = 0.621371;
+        const MILE_TO_KM = 1.609344;
+
+        function timeToSeconds(min, sec) {
+            return (parseInt(min) || 0) * 60 + (parseInt(sec) || 0);
+        }
+
+        function secondsToTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.round(seconds % 60);
+            return { min, sec };
+        }
+
+        function formatTime(min, sec) {
+            return `${min}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function formatDuration(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.round(totalSeconds % 60);
+            
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function convertPace() {
+            const min = document.getElementById('paceMin').value;
+            const sec = document.getElementById('paceSec').value;
+            const unit = document.getElementById('paceUnit').value;
+
+            if (!min && !sec) {
+                alert('Por favor introduce un pace válido');
+                return;
+            }
+
+            const paceSeconds = timeToSeconds(min, sec);
+            let results = '';
+
+            if (unit === 'km') {
+                // Convertir de min/km a otras unidades
+                const pacePerMile = paceSeconds * MILE_TO_KM;
+                const pacePerMileTime = secondsToTime(pacePerMile);
+                const speedKmh = 3600 / paceSeconds;
+                const speedMph = speedKmh * KM_TO_MILE;
+
+                results = `
+                    <div class="result-item">
+                        <span>Pace por km:</span>
+                        <span><strong>${formatTime(min || 0, sec || 0)}</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Pace por milla:</span>
+                        <span><strong>${formatTime(pacePerMileTime.min, pacePerMileTime.sec)}</strong></span>
+                    </div>
+                    <div class="result-item treadmill-highlight">
+                        <span>Velocidad (km/h):</span>
+                        <span><strong>${speedKmh.toFixed(1)} km/h</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Velocidad (mph):</span>
+                        <span><strong>${speedMph.toFixed(1)} mph</strong></span>
+                    </div>
+                `;
+            } else {
+                // Convertir de min/mile a otras unidades
+                const pacePerKm = paceSeconds * KM_TO_MILE;
+                const pacePerKmTime = secondsToTime(pacePerKm);
+                const speedMph = 3600 / paceSeconds;
+                const speedKmh = speedMph * MILE_TO_KM;
+
+                results = `
+                    <div class="result-item">
+                        <span>Pace por milla:</span>
+                        <span><strong>${formatTime(min || 0, sec || 0)}</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Pace por km:</span>
+                        <span><strong>${formatTime(pacePerKmTime.min, pacePerKmTime.sec)}</strong></span>
+                    </div>
+                    <div class="result-item">
+                        <span>Velocidad (mph):</span>
+                        <span><strong>${speedMph.toFixed(1)} mph</strong></span>
+                    </div>
+                    <div class="result-item treadmill-highlight">
+                        <span>Velocidad (km/h):</span>
+                        <span><strong>${speedKmh.toFixed(1)} km/h</strong></span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('paceConversions').innerHTML = results;
+            document.getElementById('paceResults').classList.remove('hidden');
+        }
+
+        function calculateRun() {
+            const distance = parseFloat(document.getElementById('distance').value);
+            const distanceUnit = document.getElementById('distanceUnit').value;
+            const targetMin = document.getElementById('targetMin').value;
+            const targetSec = document.getElementById('targetSec').value;
+            const targetUnit = document.getElementById('targetUnit').value;
+
+            if (!distance || (!targetMin && !targetSec)) {
+                alert('Por favor completa todos los campos');
+                return;
+            }
+
+            const paceSeconds = timeToSeconds(targetMin, targetSec);
+            
+            // Convertir distancia a km y millas
+            let distanceKm, distanceMiles;
+            if (distanceUnit === 'km') {
+                distanceKm = distance;
+                distanceMiles = distance * KM_TO_MILE;
+            } else {
+                distanceMiles = distance;
+                distanceKm = distance * MILE_TO_KM;
+            }
+
+            // Calcular tiempos según el pace objetivo
+            let totalSeconds;
+            if (targetUnit === 'km') {
+                totalSeconds = distanceKm * paceSeconds;
+            } else {
+                totalSeconds = distanceMiles * paceSeconds;
+            }
+
+            // Calcular paces en ambas unidades
+            const pacePerKmSeconds = targetUnit === 'km' ? paceSeconds : paceSeconds * KM_TO_MILE;
+            const pacePerMileSeconds = targetUnit === 'mile' ? paceSeconds : paceSeconds * MILE_TO_KM;
+            
+            const pacePerKm = secondsToTime(pacePerKmSeconds);
+            const pacePerMile = secondsToTime(pacePerMileSeconds);
+
+            // Calcular velocidades
+            const speedKmh = 3600 / pacePerKmSeconds;
+            const speedMph = 3600 / pacePerMileSeconds;
+
+            const results = `
+                <div class="result-item">
+                    <span>Distancia:</span>
+                    <span><strong>${distanceKm.toFixed(1)} km / ${distanceMiles.toFixed(1)} mi</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Tiempo total:</span>
+                    <span><strong>${formatDuration(totalSeconds)}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Pace por km:</span>
+                    <span><strong>${formatTime(pacePerKm.min, pacePerKm.sec)}</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Pace por milla:</span>
+                    <span><strong>${formatTime(pacePerMile.min, pacePerMile.sec)}</strong></span>
+                </div>
+                <div class="result-item treadmill-highlight">
+                    <span>🏃‍♂️ Velocidad caminadora:</span>
+                    <span><strong>${speedKmh.toFixed(1)} km/h</strong></span>
+                </div>
+                <div class="result-item">
+                    <span>Velocidad (mph):</span>
+                    <span><strong>${speedMph.toFixed(1)} mph</strong></span>
+                </div>
+            `;
+
+            document.getElementById('runCalculations').innerHTML = results;
+            document.getElementById('runResults').classList.remove('hidden');
+        }
+
+        // Mejorar UX con Enter key
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        const section = input.closest('.section');
+                        const button = section.querySelector('.btn');
+                        button.click();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
